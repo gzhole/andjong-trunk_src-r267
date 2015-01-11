@@ -17,6 +17,11 @@ import jp.sourceforge.andjong.mahjong.EventIf.EventId;
  *
  */
 public class DrawItem {
+
+    private boolean isDebug = false;
+    public DrawItem(boolean isDebug) {
+        this.m_isDebug = isDebug;
+    }
 	/** Initialization waiting */
 	public static final int STATE_INIT_WAIT = 0;
 	/** No state */
@@ -179,13 +184,13 @@ public class DrawItem {
 	}
 
 	public class PlayerInfo {
-		/** Hand  */
+		/** Hand 手牌 */
 		Tehai m_tehai = new Tehai();
-		/** Hu */
+		/** He 河 */
 		Hou m_kawa = new Hou();
 		/** Tsumo tile  */
 		Hai m_tsumoHai;
-		/**  Point bar_ */
+		/**  Point bar 点棒 */
 		int m_tenbo;
 		boolean m_tenpai;
 	}
@@ -194,7 +199,7 @@ public class DrawItem {
 	PlayerInfo m_playerInfos[] = new PlayerInfo[4];
 
 	/** Debug flag */
-	boolean m_isDebug = false;
+	boolean m_isDebug = isDebug; //by gary Debug flag
 
 	/** Event ID  */
 	EventId m_eventId;

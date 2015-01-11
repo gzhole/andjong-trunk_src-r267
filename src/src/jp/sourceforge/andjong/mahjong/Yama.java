@@ -2,6 +2,9 @@ package jp.sourceforge.andjong.mahjong;
 
 import java.util.Random;
 
+import jp.sourceforge.andjong.R;
+import jp.sourceforge.andjong.Settings;
+
 /**
  * Mountain I will manage.
  *
@@ -10,53 +13,96 @@ import java.util.Random;
  */
 public class Yama {
     //The maximum number of array of Yamapai
-	private final static int YAMA_HAIS_MAX = 136;
+	private int YAMA_HAIS_MAX = 136;
 
 	/** The maximum number of array of Tsumo tile * / */
-	private final static int TSUMO_HAIS_MAX = 122;
+    //private final static int TSUMO_HAIS_MAX = 122;
+    private int TSUMO_HAIS_MAX;
 
-	/** The maximum number of array of Rinshan tiles */
-	private final static int RINSHAN_HAIS_MAX = 4;
+    /** The maximum number of array of Rinshan tiles */
+    //private final static int RINSHAN_HAIS_MAX = 4;
 
-	/** The maximum number of sequence of each Dora tiles */
-	public final static int DORA_HAIS_MAX = RINSHAN_HAIS_MAX + 1;
+    private int RINSHAN_HAIS_MAX;
 
-	/** Array of Yamapai */
-	private Hai[] m_yamaHais = new Hai[YAMA_HAIS_MAX];
+    /** The maximum number of sequence of each Dora tiles */
+    public int DORA_HAIS_MAX;
 
-	/** Array of Tsumo tile*/
-	private Hai[] m_tsumoHais = new Hai[TSUMO_HAIS_MAX];
+    /** Array of Yamapai */
+    private Hai[] m_yamaHais;
 
-	/**  Array of Rinshan tiles  */
-	private Hai[] m_rinshanHais = new Hai[RINSHAN_HAIS_MAX];
+    /** Array of Tsumo tile*/
+    private Hai[] m_tsumoHais;
 
-	/** position of iRinshanHai */
-	private int m_iRinshanHais;
+    /**  Array of Rinshan tiles  */
+    private Hai[] m_rinshanHais;
 
-	/** Index of Tsumo tile */
-	private int m_iTsumoHais;
+    /** position of iRinshanHai */
+    private int m_iRinshanHais;
 
-	/** Table Dora array of tiles */
-	private Hai[] m_omoteDoraHais = new Hai[DORA_HAIS_MAX];
+    /** Index of Tsumo tile */
+    private int m_iTsumoHais;
 
-	/**  Array of back Dora tiles */
-	private Hai[] m_uraDoraHais = new Hai[DORA_HAIS_MAX];
+    /** Table Dora array of tiles */
+    private Hai[] m_omoteDoraHais ;
 
-	{
-		for (int i = Hai.ID_WAN_1; i < Hai.ID_ITEM_MAX; i++) {
-			for (int j = 0; j < 4; j++) {
-				m_yamaHais[(i * 4) + j] = new Hai(i);
-			}
-		}
-	}
-
+    /**  Array of back Dora tiles */
+    private Hai[] m_uraDoraHais ;
 	/**
 	 * I want to create a mountain.
 	 */
-	Yama() {
-		setTsumoHaisStartIndex(0);
-	}
+	/*private Yama() {
 
+		setTsumoHaisStartIndex(0);
+	}*/
+
+    private String style ="hongkong";
+    Yama(String style) {
+        this.style = style;
+        YAMA_HAIS_MAX = 136;
+        if (style.equalsIgnoreCase("hongkong")) {
+            this.TSUMO_HAIS_MAX = 136;
+            this.RINSHAN_HAIS_MAX = 0;
+            /** The maximum number of sequence of each Dora tiles */
+            DORA_HAIS_MAX = 0;
+            /** Table Dora array of tiles */
+            m_omoteDoraHais = new Hai[0];
+
+            /**  Array of back Dora tiles */
+            m_uraDoraHais = new Hai[0];
+        } else if (style.equalsIgnoreCase("japan")){
+            this.TSUMO_HAIS_MAX = 122;
+            this.RINSHAN_HAIS_MAX = 4;
+            /** The maximum number of sequence of each Dora tiles */
+            DORA_HAIS_MAX = RINSHAN_HAIS_MAX + 1;
+            /** Table Dora array of tiles */
+            m_omoteDoraHais = new Hai[DORA_HAIS_MAX];
+
+            /**  Array of back Dora tiles */
+            m_uraDoraHais = new Hai[DORA_HAIS_MAX];
+        }
+
+
+        /** Array of Yamapai */
+        m_yamaHais = new Hai[YAMA_HAIS_MAX];
+
+        /** Array of Tsumo tile*/
+        m_tsumoHais = new Hai[TSUMO_HAIS_MAX];
+
+        /**  Array of Rinshan tiles  */
+        m_rinshanHais = new Hai[RINSHAN_HAIS_MAX];
+
+
+
+
+        {
+            for (int i = Hai.ID_WAN_1; i < Hai.ID_ITEM_MAX; i++) {
+                for (int j = 0; j < 4; j++) {
+                    m_yamaHais[(i * 4) + j] = new Hai(i);
+                }
+            }
+        }
+        setTsumoHaisStartIndex(0);
+    }
 	/**
 	 * Shuffle
 	 */
@@ -110,14 +156,17 @@ public class Yama {
 	 * @return Table Dora array of
 	 */
 	Hai[] getOmoteDoraHais() {
-		int omoteDoraHaisLength = m_iRinshanHais + 1;
-		Hai[] omoteDoraHais = new Hai[omoteDoraHaisLength];
+        if (style.equalsIgnoreCase("japan")) {
+            int omoteDoraHaisLength = m_iRinshanHais + 1;
+            Hai[] omoteDoraHais = new Hai[omoteDoraHaisLength];
 
-		for (int i = 0; i < omoteDoraHaisLength; i++) {
-			omoteDoraHais[i] = new Hai(this.m_omoteDoraHais[i]);
-		}
+            for (int i = 0; i < omoteDoraHaisLength; i++) {
+                omoteDoraHais[i] = new Hai(this.m_omoteDoraHais[i]);
+            }
 
-		return omoteDoraHais;
+            return omoteDoraHais;
+            }
+        return new Hai[0];
 	}
 
 	/**
@@ -126,14 +175,17 @@ public class Yama {
 	 * @return back Dora array of
 	 */
 	Hai[] getUraDoraHais() {
-		int uraDoraHaisLength = m_iRinshanHais + 1;
-		Hai[] uraDoraHais = new Hai[uraDoraHaisLength];
+        if (style.equalsIgnoreCase("japan")) {
+            int uraDoraHaisLength = m_iRinshanHais + 1;
+            Hai[] uraDoraHais = new Hai[uraDoraHaisLength];
 
-		for (int i = 0; i < uraDoraHaisLength; i++) {
-			uraDoraHais[i] = new Hai(this.m_uraDoraHais[i]);
-		}
+            for (int i = 0; i < uraDoraHaisLength; i++) {
+                uraDoraHais[i] = new Hai(this.m_uraDoraHais[i]);
+            }
 
-		return uraDoraHais;
+            return uraDoraHais;
+        }
+        return new Hai[0];
 	}
 
 	Hai[] getAllDoraHais() {

@@ -268,61 +268,66 @@ public class Mahjong implements Runnable {
                     continue;
                 }
 
-                // �ǂ�i�߂�B
+                // 局を進
                 m_kyoku++;
             }
 
-            // �C�x���g�i�Q�[���̏I���j�𔭍s����B
+            // I will issue event (end of the game).
             m_view.event(EventId.END_GAME, KAZE_NONE, KAZE_NONE);
         }
 	}
 
 	/**
-	 * ������B
+	 *
 	 */
 	private void initialize() {
-		// �R���쐬����B
-		m_yama = new Yama();
 
-		// �ԃh����ݒ肷��B
-		if (m_view.isAkaDora()) {
-			m_yama.setRedDora(Hai.ID_PIN_5, 2);
-			m_yama.setRedDora(Hai.ID_WAN_5, 1);
-			m_yama.setRedDora(Hai.ID_SOU_5, 1);
-		}
+        // 山を作成
+        m_yama = new Yama(m_view.getStyle());
 
-		// �ǂ�������B
-		m_kyoku = KYOKU_TON_1;
-		//m_kyoku = KYOKU_TON_4;
+        // set the red Dora
+        if (m_view.isAkaDora()) {
+            m_yama.setRedDora(Hai.ID_PIN_5, 2);
+            m_yama.setRedDora(Hai.ID_WAN_5, 1);
+            m_yama.setRedDora(Hai.ID_SOU_5, 1);
+        }
 
-		// �ǂ̏I����ݒ肷��B
-		//m_kyokuEnd = KYOKU_NAN_4;
-		m_kyokuEnd = m_view.getKyokusuu();
+        // 局を初期化
+        m_kyoku = KYOKU_TON_1;
+        //m_kyoku = KYOKU_TON_4;
 
-		// �c���v���쐬����B
-		m_tsumoHai = new Hai();
+        // 局の終了を設定
+        //m_kyokuEnd = KYOKU_NAN_4;
+        m_kyokuEnd = m_view.getKyokusuu();
 
-		// �̔v���쐬����B
-		m_suteHai = new Hai();
+        //Tsumo I create a pie.
+        m_tsumoHai = new Hai();
 
-		m_suteHaisCount = 0;
+        // 捨牌を作成
+        m_suteHai = new Hai();
 
-		// ���[�`�_�̐���������B
-		m_reachbou = 0;
+        m_suteHaisCount = 0;
 
-		// �{���������B
-		m_honba = 0;
+        // initialize the number of Reach bar
+        m_reachbou = 0;
 
-		// �v���C���[�̐l����ݒ肷��B
-		m_playerNum = 4;
+        // 本場を初期化
+        m_honba = 0;
 
-		// �v���C���[�ɒ񋟂�������쐬����B
-		m_info = new Info(this);
+        //
+        m_playerNum = 4;
 
-		// �v���C���[�̔z���������B
-		m_players = new Player[m_playerNum];
-		m_players[0] = new Player((EventIf) new Man(m_info, "A", m_playerAction));
-		m_players[1] = new Player((EventIf) new AI(m_info, "B"));
+        //  create information to be provided to the player
+        m_info = new Info(this);
+
+        // initialize an array of players
+        m_players = new Player[m_playerNum];
+        if (m_view.isDebug()) {
+            m_players[0] = new Player((EventIf) new AIPon(m_info, "A"));
+        } else{
+        	m_players[0] = new Player((EventIf) new Man(m_info, "A", m_playerAction));
+        }
+		m_players[1] = new Player((EventIf) new AIPon(m_info, "B"));
 		m_players[2] = new Player((EventIf) new AI(m_info, "C"));
 		m_players[3] = new Player((EventIf) new AI(m_info, "D"));
 
@@ -330,13 +335,13 @@ public class Mahjong implements Runnable {
 			m_players[i].setTenbou(TENBOU_INIT);
 		}
 
-		// �����v���C���[�C���f�b�N�X�ɕϊ�����z���������B
+		// want to initialize the array to be converted to the player index the wind.
 		m_kazeToPlayerIdx = new int[m_players.length];
 
-		// UI�ɒ񋟂�������쐬����B
+		// create a information to be provided to the UI.
 		m_infoUi = new InfoUi(this, m_playerAction);
 
-		// UI��������B
+		// initialize the UI.
 		m_view.initUi(m_infoUi, "AndjongView");
 	}
 
@@ -347,10 +352,10 @@ public class Mahjong implements Runnable {
 	}
 
 	/**
-	 * �ǂ��J�n����B
+	 *  局を開始
 	 */
 	private void startKyoku() {
-		// �A����������B
+		// 連荘を初期化
 		m_renchan = false;
 
 		m_isTenhou = true;
@@ -359,39 +364,39 @@ public class Mahjong implements Runnable {
 		m_isRinshan = false;
 		m_isLast = false;
 
-		// �v���C���[�̎�����ݒ肷��B
+		//  set the self-wind players
 		setJikaze();
 
-		// �C�x���g�𔭍s��������������B
+		//  initialize the wind that issued the event.
 		m_kazeFrom = m_players[m_iOya].getJikaze();
 
-		// �C�x���g�̑ΏۂƂȂ�������������B
+		//  initializes the wind was the subject of the event.
 		m_kazeTo = m_players[m_iOya].getJikaze();
 
-		// �v���C���[�z���������B
+		// initialize the player array.
 		for (int i = 0; i < m_players.length; i++) {
 			m_players[i].init();
 		}
 
 		m_suteHaisCount = 0;
 
-		// ���v����B
+		// Shuffle
 		m_yama.xipai();
 
-		// �T�C�U�������B
+		// dice rolls
 		m_sais[0].saifuri();
 		m_sais[1].saifuri();
 
-		// UI�C�x���g�i�T�C�U��j�𔭍s����B
+		// issue a UI events (re pretend).
 		//m_view.event(EventId.SAIFURI, mFromKaze, mToKaze);
 
-		// �R�Ɋ���ڂ�ݒ肷��B
+		// 山に割れ目を設定
 		setWareme(m_sais);
 
-		// �z�v����B
+		// 配牌
 		haipai();
 
-		// UI�C�x���g�i�z�v�j�𔭍s����B
+		// 配牌）を発行
 		//m_view.event(EventId.HAIPAI, mFromKaze, mToKaze);
 		m_view.event(EventId.START_KYOKU, m_kazeFrom, m_kazeTo);
 
@@ -400,17 +405,17 @@ public class Mahjong implements Runnable {
 		int tsumoNokori;
 		int score;
 		int iPlayer;
-		// �ǂ�i�s����B
+		// 局を進行 -- Gary entry point
 		KYOKU_MAIN: while (true) {
-			// UI�C�x���g�i�i�s�҂��j�𔭍s����B
+			// issue a UI events (progression wait)
 			m_view.event(EventId.UI_WAIT_PROGRESS, KAZE_NONE, KAZE_NONE);
 
-			// �c���v���擾����B
+			// get the Tsumo pie.
 			m_tsumoHai = m_yama.tsumo();
 
-			// �c���v���Ȃ��ꍇ�A���ǂ���B
+			// If there is no Tsumo tile (ツモ牌がない場合、)流局
 			if (m_tsumoHai == null) {
-				// �������т̊m�F������B
+				// 流し満貫の確認
 				for (int i = 0, j = m_iOya; i < m_players.length; i++, j++) {
 					if (j >= m_players.length) {
 						j = 0;
@@ -455,16 +460,16 @@ public class Mahjong implements Runnable {
 						activePlayer.increaseTenbou(score);
 						m_agariInfo.m_agariScore = score - (m_honba * 300);
 
-						// �_���𐴎Z����B
+						// 点数を清算
 						activePlayer.increaseTenbou(m_reachbou * 1000);
 
-						// ���[�`�_�̐���������B
+						// initialize the number of Reach bar.
 						m_reachbou = 0;
 
-						// UI�C�x���g�i�c��������j�𔭍s����B
+						// issue a UI events (Tsumo up)
 						m_view.event(EventId.TSUMO_AGARI, m_kazeFrom, m_kazeTo);
 
-						// �e���X�V����B
+						// want to update the parent.
 						if (m_iOya != m_kazeToPlayerIdx[m_kazeFrom]) {
 							m_iOya++;
 							if (m_iOya >= m_players.length) {
@@ -480,7 +485,7 @@ public class Mahjong implements Runnable {
 					}
 				}
 
-				// �e���p�C�̊m�F������B
+				// confirm the Tenpai
 				int tenpaiCount = 0;
 				for (int i = 0; i < m_tenpai.length; i++) {
 					iPlayer = m_kazeToPlayerIdx[i];
@@ -515,21 +520,21 @@ public class Mahjong implements Runnable {
 					}
 				}
 
-				// UI�C�x���g�i���ǁj�𔭍s����B
+				// issue a UI events 流局
 				m_view.event(EventId.RYUUKYOKU, KAZE_NONE, KAZE_NONE);
 
-				// �t���O�𗎂Ƃ��Ă����B
+				//  drop the flag
 				for (int i = 0; i < m_tenpai.length; i++) {
 					m_tenpai[i] = false;
 				}
 
-				// �e���X�V����B�オ��A���Ƃ���B
+				//  親を更新
 				m_iOya++;
 				if (m_iOya >= m_players.length) {
 					m_iOya = 0;
 				}
 
-				// �{��𑝂₷�B
+				//本場を増
 				m_honba++;
 
 				break KYOKU_MAIN;
@@ -541,15 +546,15 @@ public class Mahjong implements Runnable {
 			} else if (tsumoNokori < 66) {
 				m_isChiihou = false;
 			}
-			//Log.i(TAG, "nokori = " + tsumoNokori + ", isChiihou = " + m_isChiihou);
+			Log.i(TAG, "Remain = " + tsumoNokori + ", isChiihou = " + m_isChiihou);
 
-			// �C�x���g�i�c���j�𔭍s����B
-			retEid = tsumoEvent();
+			// issue an event (Tsumo)
+			retEid = tsumoEvent(); //must in the middle have AI Chi/Pon events
 
-			// �C�x���g����������B
+			// want to handle the event.
 			switch (retEid) {
-			case TSUMO_AGARI:// �c��������
-				if (activePlayer.isReach()) {
+			case TSUMO_AGARI:// rise Tsumo
+				if (activePlayer.isReach() && m_view.getStyle().equalsIgnoreCase("japan")) {
 					m_setting.setDoraHais(m_yama.getAllDoraHais());
 				}
 				//getAgariScore(activePlayer.getTehai(), m_tsumoHai);
@@ -578,16 +583,16 @@ public class Mahjong implements Runnable {
 				activePlayer.increaseTenbou(score);
 				m_agariInfo.m_agariScore = score - (m_honba * 300);
 
-				// �_���𐴎Z����B
+				// 点数を清算
 				activePlayer.increaseTenbou(m_reachbou * 1000);
 
-				// ���[�`�_�̐���������B
+				//initialize the number of Reach bar
 				m_reachbou = 0;
 
-				// UI�C�x���g�i�c��������j�𔭍s����B
+				// issue a UI events (Tsumo up)
 				m_view.event(retEid, m_kazeFrom, m_kazeTo);
 
-				// �e���X�V����B
+				// 親を更新
 				if (m_iOya != m_kazeToPlayerIdx[m_kazeFrom]) {
 					m_iOya++;
 					if (m_iOya >= m_players.length) {
@@ -600,8 +605,8 @@ public class Mahjong implements Runnable {
 				}
 
 				break KYOKU_MAIN;
-			case RON_AGARI:// ����
-				if (activePlayer.isReach()) {
+			case RON_AGARI://  Ron
+				if (activePlayer.isReach()&& m_view.getStyle().equalsIgnoreCase("japan")) {
 					m_setting.setDoraHais(m_yama.getAllDoraHais());
 				}
 				m_score = new AgariScore();
@@ -618,16 +623,16 @@ public class Mahjong implements Runnable {
 
 				m_agariInfo.m_agariScore = score - (m_honba * 300);
 
-				// �_���𐴎Z����B
+				// 点数を清算
 				activePlayer.increaseTenbou(m_reachbou * 1000);
 
-				// ���[�`�_�̐���������B
+				// initialize the number of Reach bar
 				m_reachbou = 0;
 
-				// UI�C�x���g�i�����j�𔭍s����B
+				// issue a UI events (Ron).
 				m_view.event(retEid, m_kazeFrom, m_kazeTo);
 
-				// �e���X�V����B
+				// 親を更新
 				if (m_iOya != m_kazeToPlayerIdx[m_kazeFrom]) {
 					m_iOya++;
 					if (m_iOya >= m_players.length) {
@@ -644,7 +649,7 @@ public class Mahjong implements Runnable {
 				break;
 			}
 
-			// �C�x���g�𔭍s���������X�V����B
+			// update the wind that issued the event
 			m_kazeFrom++;
 			if (m_kazeFrom >= m_players.length) {
 				m_kazeFrom = 0;
@@ -653,7 +658,7 @@ public class Mahjong implements Runnable {
 	}
 
 	/**
-	 * �v���C���[�̎�����ݒ肷��B
+	 * set the self-wind players
 	 */
 	private void setJikaze() {
 		for (int i = 0, j = m_iOya; i < m_players.length; i++, j++) {
@@ -661,19 +666,19 @@ public class Mahjong implements Runnable {
 				j = 0;
 			}
 
-			// �v���C���[�̎�����ݒ肷��B
+			// set the self-wind players
 			m_players[j].setJikaze(i);
 
-			// �����v���C���[�C���f�b�N�X�ɕϊ�����z���ݒ肷��B
+			// Wind me to set the array to be converted to the player index.
 			m_kazeToPlayerIdx[i] = j;
 		}
 	}
 
 	/**
-	 * �R�Ɋ���ڂ�ݒ肷��B
+	 * 山に割れ目を設定
 	 *
 	 * @param sais
-	 *            �T�C�R���̔z��
+	 *            Array of dice
 	 */
 	void setWareme(Sai[] sais) {
 		int sum = sais[0].getNo() + sais[1].getNo() - 1;
@@ -686,7 +691,7 @@ public class Mahjong implements Runnable {
 	}
 
 	/**
-	 * �z�v����B
+	 * 配牌
 	 */
 	private void haipai() {
 		for (int i = 0, j = m_iOya, max = m_players.length * 13; i < max; i++, j++) {
@@ -735,9 +740,9 @@ public class Mahjong implements Runnable {
 			//int haiIds[] = {0, 0, 0, 2, 2, 2, 3, 3, 3, 4, 4, 4, 10, 10};
 			//int haiIds[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 10, 10}; // �C�b�c�[
 			//int haiIds[] = {0, 1, 2, 9, 10, 11, 18, 19, 20, 33, 33, 33, 27, 27};
-			//int haiIds[] = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4}; // ���[�`�^���s���C�[�y�[�R�[
-			//int haiIds[] = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7}; // ���[�`�^���s���C�[�y�[�R�[
-			//int haiIds[] = {1, 1, 2, 2, 3, 3, 4, 5, 6, 10, 10, 10, 11, 12}; // ���[�`�^���s���C�[�y�[�R�[
+			//int haiIds[] = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4}; // Lee titanium pin Ipeko over
+			//int haiIds[] = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7}; // Lee titanium pin Ipeko over
+			//int haiIds[] = {1, 1, 2, 2, 3, 3, 4, 5, 6, 10, 10, 10, 11, 12}; // Lee titanium pin Ipeko over
 			for (int i = 0; i < haiIds.length - 1; i++) {
 				m_players[iPlayer].getTehai().addJyunTehai(new Hai(haiIds[i]));
 			}
@@ -750,28 +755,28 @@ public class Mahjong implements Runnable {
 		}
 	}
 
-	boolean m_isTenhou = false;
-	boolean m_isChiihou = false;
+	boolean m_isTenhou = false; //天和
+	boolean m_isChiihou = false; //地和
 	boolean m_isTsumo = false;
 	boolean m_isRinshan = false;
 	boolean m_isLast = false;
 
 	/**
-	 * �C�x���g�i�c���j�𔭍s����B
+	 *  issue an event (Tsumo). //Gary key
 	 *
-	 * @return �C�x���gID
+	 * @return Event ID
 	 */
 	private EventId tsumoEvent() {
-		// �A�N�e�B�u�v���C���[��ݒ肷��B
+		// set the active player
 		activePlayer = m_players[m_kazeToPlayerIdx[m_kazeFrom]];
 
 		m_isTsumo = true;
 
 		//m_tsumoHai = new Hai(13, true);
-		// UI�C�x���g�i�c���j�𔭍s����B
+		//issue a UI events (Tsumo).
 		m_view.event(EventId.TSUMO, m_kazeFrom, m_kazeFrom);
 
-		// �C�x���g�i�c���j�𔭍s����B
+		// issue an event (Tsumo).
 		EventId retEid = activePlayer.getEventIf().event(EventId.TSUMO, m_kazeFrom, m_kazeFrom);
 		Log.i(TAG, retEid.toString() + ", kazeFrom = " + m_kazeFrom + ", kazeTo = " + m_kazeTo);
 
@@ -779,7 +784,7 @@ public class Mahjong implements Runnable {
 
 		m_isTsumo = false;
 
-		// UI�C�x���g�i�i�s�҂��j�𔭍s����B
+		// issue a UI events (progression wait)
 		m_view.event(EventId.UI_WAIT_PROGRESS, m_kazeFrom, m_kazeFrom);
 
 		int sutehaiIdx;
@@ -789,7 +794,7 @@ public class Mahjong implements Runnable {
 			activePlayer.setIppatsu(false);
 		}
 
-		// �C�x���g����������B
+		//  handle the event
 		switch (retEid) {
 		case ANKAN:
 			m_isChiihou = false;
@@ -799,34 +804,41 @@ public class Mahjong implements Runnable {
 			kanHais = m_playerAction.getKanHais();
 			activePlayer.getTehai().setAnKan(kanHais[sutehaiIdx], getRelation(this.m_kazeFrom, this.m_kazeTo));
 
-			// �C�x���g��ʒm����B
+			// post an event.
 			retEid = notifyEvent(EventId.ANKAN, m_kazeFrom, m_kazeFrom);
 
-			// UI�C�x���g�i�i�s�҂��j�𔭍s����B
+			// issue a UI events (progression wait)
 			m_view.event(EventId.UI_WAIT_PROGRESS, KAZE_NONE, KAZE_NONE);
 
-			// �c���v���擾����B
-			m_tsumoHai = m_yama.rinshanTsumo();
+			//  get the Tsumo pie.
+			//m_tsumoHai = m_yama.rinshanTsumo();
+            String style = m_view.getStyle();
 
-			// �C�x���g�i�c���j�𔭍s����B
+            if (style.equalsIgnoreCase("japan")) {
+                m_tsumoHai = m_yama.rinshanTsumo();
+            }else if (style.equalsIgnoreCase("hongkong")) {
+                m_tsumoHai = m_yama.tsumo();
+            }
+            //m_tsumoHai = m_yama.tsumo();
+			// issue an event (Tsumo).
 			m_isRinshan = true;
 			retEid = tsumoEvent();
 			m_isRinshan = false;
 			break;
-		case TSUMO_AGARI:// �c��������
+		case TSUMO_AGARI:// rise // Tsumo
 			break;
-		case SUTEHAI:// �̔v
-			// �̔v�̃C���f�b�N�X���擾����B
+		case SUTEHAI:// discarded tile
+			// get the index of the discarded tile.
 			sutehaiIdx = activePlayer.getEventIf().getISutehai();
 
-			// ���v�̊Ԃ��Ƃ�B
+			// take between the physical pie
 			m_infoUi.setSutehaiIdx(sutehaiIdx);
 			m_view.event(EventId.UI_WAIT_RIHAI, m_kazeFrom, m_kazeFrom);
 
-			if (sutehaiIdx >= activePlayer.getTehai().getJyunTehaiLength()) {// �c���؂�
+			if (sutehaiIdx >= activePlayer.getTehai().getJyunTehaiLength()) {// Tsumo cut
 				Hai.copy(m_suteHai, m_tsumoHai);
 				activePlayer.getKawa().add(m_suteHai);
-			} else {// ��o��
+			} else {// 手出
 				activePlayer.getTehai().copyJyunTehaiIndex(m_suteHai, sutehaiIdx);
 				activePlayer.getTehai().rmJyunTehai(sutehaiIdx);
 				activePlayer.getTehai().addJyunTehai(m_tsumoHai);
@@ -839,11 +851,11 @@ public class Mahjong implements Runnable {
 				activePlayer.setSuteHaisCount(m_suteHaisCount);
 			}
 
-			// �C�x���g��ʒm����B
+			//  post an event
 			retEid = notifyEvent(EventId.SUTEHAI, m_kazeFrom, m_kazeFrom);
 			break;
 		case REACH:
-			// �̔v�̃C���f�b�N�X���擾����B
+			// get the index of the discarded tile.
 			sutehaiIdx = activePlayer.getEventIf().getISutehai();
 			activePlayer.setReach(true);
 			if (m_isChiihou) {
@@ -852,11 +864,11 @@ public class Mahjong implements Runnable {
 			activePlayer.setSuteHaisCount(m_suteHaisCount);
 			m_view.event(EventId.UI_WAIT_RIHAI, m_kazeFrom, m_kazeFrom);
 
-			if (sutehaiIdx >= activePlayer.getTehai().getJyunTehaiLength()) {// �c���؂�
+			if (sutehaiIdx >= activePlayer.getTehai().getJyunTehaiLength()) {// Tsumo cut
 				Hai.copy(m_suteHai, m_tsumoHai);
 				activePlayer.getKawa().add(m_suteHai);
 				activePlayer.getKawa().setReach(true);
-			} else {// ��o��
+			} else {// mess around
 				activePlayer.getTehai().copyJyunTehaiIndex(m_suteHai, sutehaiIdx);
 				activePlayer.getTehai().rmJyunTehai(sutehaiIdx);
 				activePlayer.getTehai().addJyunTehai(m_tsumoHai);
@@ -872,7 +884,7 @@ public class Mahjong implements Runnable {
 
 			activePlayer.setIppatsu(true);
 
-			// �C�x���g��ʒm����B
+			// post an event
 			retEid = notifyEvent(EventId.REACH, m_kazeFrom, m_kazeFrom);
 			break;
 		default:
@@ -883,18 +895,18 @@ public class Mahjong implements Runnable {
 	}
 
 	/**
-	 * �C�x���g��ʒm����B
+	 * will be notified of the event.
 	 *
 	 * @param a_eventId
-	 *            �C�x���gID
+	 *            Event ID
 	 * @param a_kazeFrom
-	 *            �C�x���g�𔭍s������
+	 *            Wind that issued the event
 	 * @param a_kazeTo
-	 *            �C�x���g�̑ΏۂƂȂ�����
-	 * @return �C�x���gID
+	 *            Wind became the events of interest
+	 * @return Event ID
 	 */
 	private EventId notifyEvent(EventId a_eventId, int a_kazeFrom, int a_kazeTo) {
-		// UI�C�x���g�𔭍s����B
+		//  issue a UI event.
 		m_view.event(a_eventId, a_kazeFrom, a_kazeTo);
 
 		EventId ret = EventId.NAGASHI;
@@ -913,12 +925,12 @@ public class Mahjong implements Runnable {
 					j = 0;
 				}
 
-				// �A�N�e�B�u�v���C���[��ݒ肷��B
+				// set the active player
 				activePlayer = m_players[m_kazeToPlayerIdx[j]];
 
 				ret = activePlayer.getEventIf().event(EventId.RON_CHECK, a_kazeFrom, j);
 				if (ret == EventId.RON_AGARI) {
-					// �A�N�e�B�u�v���C���[��ݒ肷��B
+					// set the active player.
 					this.m_kazeFrom = j;
 					this.m_kazeTo = a_kazeFrom;
 					activePlayer = m_players[m_kazeToPlayerIdx[this.m_kazeFrom]];
@@ -928,16 +940,16 @@ public class Mahjong implements Runnable {
 			break;
 		}
 
-		// �e�v���C���[�ɃC�x���g��ʒm����B
+		//  post an event to each player
 		NOTIFYLOOP: for (int i = 0, j = a_kazeFrom; i < m_players.length; i++, j++) {
 			if (j >= m_players.length) {
 				j = 0;
 			}
 
-			// �A�N�e�B�u�v���C���[��ݒ肷��B
+			//  set the active player.
 			activePlayer = m_players[m_kazeToPlayerIdx[j]];
 
-			// �C�x���g�𔭍s����B
+			// raise an event.
 			a_kazeTo = j;
 			ret = activePlayer.getEventIf().event(a_eventId, a_kazeFrom, a_kazeTo);
 
@@ -947,16 +959,16 @@ public class Mahjong implements Runnable {
 				}
 			}
 
-			// �C�x���g����������B
+			//  handle the event
 			switch (ret) {
-			case TSUMO_AGARI:// �c��������
-				// �A�N�e�B�u�v���C���[��ݒ肷��B
+			case TSUMO_AGARI:// rise Tsumo
+				// set the active player
 				this.m_kazeFrom = j;
 				this.m_kazeTo = a_kazeTo;
 				activePlayer = m_players[m_kazeToPlayerIdx[this.m_kazeFrom]];
 				break NOTIFYLOOP;
-			case RON_AGARI:// ����
-				// �A�N�e�B�u�v���C���[��ݒ肷��B
+			case RON_AGARI:// Ron
+				// set the active player
 				this.m_kazeFrom = a_kazeTo;
 				this.m_kazeTo = a_kazeFrom;
 //				this.m_kazeFrom = j;
@@ -965,7 +977,7 @@ public class Mahjong implements Runnable {
 				break NOTIFYLOOP;
 			case PON:
 				m_isChiihou = false;
-				// �A�N�e�B�u�v���C���[��ݒ肷��B
+				// set the active player
 				this.m_kazeFrom = j;
 				this.m_kazeTo = a_kazeFrom;
 				activePlayer = m_players[m_kazeToPlayerIdx[this.m_kazeFrom]];
@@ -974,7 +986,7 @@ public class Mahjong implements Runnable {
 
 				notifyEvent(EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo);
 
-				// �̔v�̃C���f�b�N�X���擾����B
+				// get the index of the discarded tileB
 				iSuteHai = activePlayer.getEventIf().getISutehai();
 				activePlayer.getTehai().copyJyunTehaiIndex(m_suteHai, iSuteHai);
 				activePlayer.getTehai().rmJyunTehai(iSuteHai);
@@ -983,12 +995,12 @@ public class Mahjong implements Runnable {
 				activePlayer.getKawa().setTedashi(true);
 				m_suteHais[m_suteHaisCount++] = new SuteHai(m_suteHai);
 
-				// �C�x���g��ʒm����B
+				// post an event
 				ret = notifyEvent(EventId.PON, this.m_kazeFrom, this.m_kazeTo);
 				break NOTIFYLOOP;
 			case CHII_LEFT:
 				m_isChiihou = false;
-				// �A�N�e�B�u�v���C���[��ݒ肷��B
+				//set the active player
 				this.m_kazeFrom = j;
 				this.m_kazeTo = a_kazeFrom;
 				activePlayer = m_players[m_kazeToPlayerIdx[this.m_kazeFrom]];
@@ -997,7 +1009,7 @@ public class Mahjong implements Runnable {
 
 				notifyEvent(EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo);
 
-				// �̔v�̃C���f�b�N�X���擾����B
+				// get the index of the discarded tile.
 				iSuteHai = activePlayer.getEventIf().getISutehai();
 				activePlayer.getTehai().copyJyunTehaiIndex(m_suteHai, iSuteHai);
 				activePlayer.getTehai().rmJyunTehai(iSuteHai);
@@ -1006,12 +1018,12 @@ public class Mahjong implements Runnable {
 				activePlayer.getKawa().setTedashi(true);
 				m_suteHais[m_suteHaisCount++] = new SuteHai(m_suteHai);
 
-				// �C�x���g��ʒm����B
+				// post an event
 				ret = notifyEvent(EventId.CHII_LEFT, this.m_kazeFrom, this.m_kazeTo);
 				break NOTIFYLOOP;
 			case CHII_CENTER:
 				m_isChiihou = false;
-				// �A�N�e�B�u�v���C���[��ݒ肷��B
+				// set the active player
 				this.m_kazeFrom = j;
 				this.m_kazeTo = a_kazeFrom;
 				activePlayer = m_players[m_kazeToPlayerIdx[this.m_kazeFrom]];
@@ -1020,7 +1032,7 @@ public class Mahjong implements Runnable {
 
 				notifyEvent(EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo);
 
-				// �̔v�̃C���f�b�N�X���擾����B
+				// get the index of the discarded tile.
 				iSuteHai = activePlayer.getEventIf().getISutehai();
 				activePlayer.getTehai().copyJyunTehaiIndex(m_suteHai, iSuteHai);
 				activePlayer.getTehai().rmJyunTehai(iSuteHai);
@@ -1029,12 +1041,12 @@ public class Mahjong implements Runnable {
 				activePlayer.getKawa().setTedashi(true);
 				m_suteHais[m_suteHaisCount++] = new SuteHai(m_suteHai);
 
-				// �C�x���g��ʒm����B
+				// post an event.
 				ret = notifyEvent(EventId.CHII_CENTER, this.m_kazeFrom, this.m_kazeTo);
 				break NOTIFYLOOP;
 			case CHII_RIGHT:
 				m_isChiihou = false;
-				// �A�N�e�B�u�v���C���[��ݒ肷��B
+				// set the active player
 				this.m_kazeFrom = j;
 				this.m_kazeTo = a_kazeFrom;
 				activePlayer = m_players[m_kazeToPlayerIdx[this.m_kazeFrom]];
@@ -1043,7 +1055,7 @@ public class Mahjong implements Runnable {
 
 				notifyEvent(EventId.SELECT_SUTEHAI, this.m_kazeFrom, this.m_kazeTo);
 
-				// �̔v�̃C���f�b�N�X���擾����B
+				//get the index of the discarded tile.
 				iSuteHai = activePlayer.getEventIf().getISutehai();
 				activePlayer.getTehai().copyJyunTehaiIndex(m_suteHai, iSuteHai);
 				activePlayer.getTehai().rmJyunTehai(iSuteHai);
@@ -1052,28 +1064,34 @@ public class Mahjong implements Runnable {
 				activePlayer.getKawa().setTedashi(true);
 				m_suteHais[m_suteHaisCount++] = new SuteHai(m_suteHai);
 
-				// �C�x���g��ʒm����B
+				// post an event.
 				ret = notifyEvent(EventId.CHII_RIGHT, this.m_kazeFrom, this.m_kazeTo);
 				break NOTIFYLOOP;
 			case DAIMINKAN:
 				m_isChiihou = false;
-				// �A�N�e�B�u�v���C���[��ݒ肷��B
+				// set the active player
 				this.m_kazeFrom = j;
 				this.m_kazeTo = a_kazeFrom;
 				activePlayer = m_players[m_kazeToPlayerIdx[this.m_kazeFrom]];
 				activePlayer.getTehai().setDaiMinKan(m_suteHai, getRelation(this.m_kazeFrom, this.m_kazeTo));
 				m_players[m_kazeToPlayerIdx[this.m_kazeTo]].getKawa().setNaki(true);
 
-				// �C�x���g��ʒm����B
+				//  post an event.
 				ret = notifyEvent(EventId.DAIMINKAN, this.m_kazeFrom, this.m_kazeTo);
 
-				// UI�C�x���g�i�i�s�҂��j�𔭍s����B
+				// issue a UI events (progression wait)
 				m_view.event(EventId.UI_WAIT_PROGRESS, KAZE_NONE, KAZE_NONE);
 
-				// �c���v���擾����B
-				m_tsumoHai = m_yama.rinshanTsumo();
+				// get the Tsumo pie.
+                String style = m_view.getStyle();
 
-				// �C�x���g�i�c���j�𔭍s����B
+                if (style.equalsIgnoreCase("japan")) {
+                    m_tsumoHai = m_yama.rinshanTsumo();
+                }else if (style.equalsIgnoreCase("hongkong")) {
+                    m_tsumoHai = m_yama.tsumo();
+                }
+
+				// will issue an event (Tsumo).
 				m_isRinshan = true;
 				ret = tsumoEvent();
 				m_isRinshan = false;
@@ -1087,68 +1105,68 @@ public class Mahjong implements Runnable {
 			}
 		}
 
-		// �A�N�e�B�u�v���C���[��ݒ肷��B
+		// set the active player.
 		activePlayer = m_players[m_kazeToPlayerIdx[a_kazeFrom]];
 
 		return ret;
 	}
 
 	/*
-	 * Info, InfoUI�ɒ񋟂���API���`����B
+	 *  Info, I define an API that provides the InfoUI.
 	 */
 
 	/**
-	 * �\�h���A�ȃh���̔z����擾����B
+	 * Table Dora, I get an array of 槓 Dora.
 	 *
-	 * @return �\�h���A�ȃh���̔z��
+	 * @return Table Dora, an array of槓Dora
 	 */
 	Hai[] getDoras() {
 		return getYama().getOmoteDoraHais();
 	}
 
 	/**
-	 * �\�h���A�ȃh���̔z����擾����B
+	 * Table Dora, I get an array of 槓 Dora.
 	 *
-	 * @return �\�h���A�ȃh���̔z��
+	 * @return Table Dora, an array of槓Dora
 	 */
 	Hai[] getUraDoras() {
 		return getYama().getUraDoraHais();
 	}
 
 	/**
-	 * �������擾����B
+	 * get the self-wind.
 	 */
 	int getJikaze() {
 		return activePlayer.getJikaze();
 	}
 
 	/**
-	 * �{����擾����B
+	 * 本場を取得
 	 *
-	 * @return �{��
+	 * @return 本場
 	 */
 	int getHonba() {
 		return m_honba;
 	}
 
 	/**
-	 * ���[�`���擾����B
+	 * reach
 	 *
 	 * @param kaze
-	 *            ��
-	 * @return ���[�`
+	 *            wind
+	 * @return Reach`
 	 */
 	boolean isReach(int kaze) {
 		return m_players[m_kazeToPlayerIdx[kaze]].isReach();
 	}
 
 	/**
-	 * ��v���R�s�[����B
+	 * Tile hand I want to copy
 	 *
 	 * @param tehai
-	 *            ��v
+	 *            手牌
 	 * @param kaze
-	 *            ��
+	 *            風
 	 */
 	void copyTehai(Tehai tehai, int kaze) {
 		if (activePlayer.getJikaze() == kaze) {
@@ -1159,33 +1177,33 @@ public class Mahjong implements Runnable {
 	}
 
 	/**
-	 * ��v���R�s�[����B
+	 * Tile hand I want to copy
 	 *
 	 * @param tehai
-	 *            ��v
+	 *            手牌
 	 * @param kaze
-	 *            ��
+	 *            風
 	 */
 	void copyTehaiUi(Tehai tehai, int kaze) {
 		Tehai.copy(tehai, m_players[m_kazeToPlayerIdx[kaze]].getTehai(), true);
 	}
 
 	/**
-	 * �͂��R�s�[����B
+	 * copy the river
 	 *
 	 * @param kawa
-	 *            ��
+	 *            河
 	 * @param kaze
-	 *            ��
+	 *            風
 	 */
 	void copyKawa(Hou kawa, int kaze) {
 		Hou.copy(kawa, m_players[m_kazeToPlayerIdx[kaze]].getKawa());
 	}
 
 	/**
-	 * �c���̎c�萔���擾����B
+	 * remaining number of Tsumo.
 	 *
-	 * @return �c���̎c�萔
+	 * @return the number of remaining Tsumo
 	 */
 	int getTsumoRemain() {
 		return m_yama.getTsumoNokori();
@@ -1269,7 +1287,7 @@ public class Mahjong implements Runnable {
 
 	@Override
 	public void run() {
-		// �Q�[�����J�n����B
+		// start the game
 		play();
 	}
 
@@ -1280,4 +1298,8 @@ public class Mahjong implements Runnable {
 	public void postUiEvent(EventId a_eventId, int a_kazeFrom, int a_kazeTo) {
 		m_view.event(a_eventId, a_kazeFrom, a_kazeTo);
 	}
+
+    public boolean isSecondFan() {
+        return m_view.isSecondFan();
+    }
 }

@@ -102,6 +102,8 @@
 	<string name="hints_title">Red tiles</string>
     <string name="endless">Endless</string>
     <string name="styles">Styles</string>
+    <string name="secondfan">two Fans to Hu</string>
+    <string name="debug">Debug</string>
 	<string name="settings_kyokusuu">Rounds</string>
 
 	<string name="rounds_tonpuu">East 4R</string>

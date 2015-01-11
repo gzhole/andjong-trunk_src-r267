@@ -57,7 +57,7 @@ public class Man implements EventIf {
 			m_info.copyTehai(m_tehai, m_info.getJikaze());
 			// get the Tsumo pie.
 			tsumoHai = m_info.getTsumoHai();
-
+           // int han = m_info.getHan();
 			if (!m_info.isReach() && (m_info.getTsumoRemain() >= 4)) {
 				indexNum = m_info.getReachIndexs(m_tehai, tsumoHai, indexs);
 				if (indexNum > 0) {
@@ -70,13 +70,17 @@ public class Man implements EventIf {
 			}
 
 			agariScore = m_info.getAgariScore(m_tehai, tsumoHai);
-			if (agariScore > 0) {
-				Log.d("Man", "agariScore = " + agariScore);
-				m_playerAction.setValidTsumo(true);
-				m_playerAction.setDispMenu(true);
-				eventId[menuNum] = EventId.TSUMO_AGARI;
-				menuNum++;
-			}
+            int han = m_info.getHan();
+            if ((m_info.isSecondFan() && agariScore > 0 && han > 1) ||(!m_info.isSecondFan() && agariScore > 0)) {
+                Log.d("Man", "han = " + han);
+                m_playerAction.setValidTsumo(true);
+                m_playerAction.setDispMenu(true);
+                eventId[menuNum] = EventId.TSUMO_AGARI;
+                menuNum++;
+
+            }
+//            if (agariScore > 0) {
+//					}
 
 			// ���������B���[�`��̃J���������Ȃ��B
 			if (!m_info.isReach()) {
@@ -216,7 +220,8 @@ public class Man implements EventIf {
 
 			if (!furiten) {
 				agariScore = m_info.getAgariScore(m_tehai, suteHai);
-				if (agariScore > 0) {
+                han = m_info.getHan();
+				if ((m_info.isSecondFan()  && agariScore > 0&& han > 1) ||(!m_info.isSecondFan() && agariScore > 0)) {
 					m_playerAction.setDispMenu(true);
 					m_playerAction.setValidRon(true);
 					m_playerAction.setMenuNum(1);
@@ -238,7 +243,7 @@ public class Man implements EventIf {
 			if (a_kazeFrom == m_info.getJikaze()) {
 				return EventId.NAGASHI;
 			}
-			//Log.e("SUTEHAI", "fromKaze = " + a_kazeFrom + ", toKaze = " + a_kazeTo);
+			Log.e("SUTEHAI", "fromKaze = " + a_kazeFrom + ", toKaze = " + a_kazeTo);
 
 			m_info.copyTehai(m_tehai, m_info.getJikaze());
 			suteHai = m_info.getSuteHai();
@@ -277,7 +282,8 @@ public class Man implements EventIf {
 
 			if (!furiten) {
 				agariScore = m_info.getAgariScore(m_tehai, suteHai);
-				if (agariScore > 0) {
+                han = m_info.getHan();
+				if ((m_info.isSecondFan()  && agariScore > 0&& han > 1) ||(!m_info.isSecondFan() && agariScore > 0)) {
 					Log.d("Man", "agariScore = " + agariScore);
 					m_playerAction.setValidRon(true);
 					eventId[menuNum] = EventId.RON_AGARI;

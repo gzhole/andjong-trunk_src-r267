@@ -1,5 +1,6 @@
 package jp.sourceforge.andjong.mahjong;
 
+import jp.sourceforge.andjong.Settings;
 import jp.sourceforge.andjong.mahjong.CountFormat.Combi;
 import jp.sourceforge.andjong.mahjong.EventIf.EventId;
 
@@ -54,6 +55,9 @@ public class Info {
 		game.copyTehai(tehai, game.getJikaze());
 	}
 
+    public boolean isSecondFan() {
+        return game.isSecondFan();
+    }
 	/**
 	 * Tile hand I want to copy the.
 	 *
@@ -304,4 +308,8 @@ public class Info {
 	public int getPlayerSuteHaisCount() {
 		return game.getPlayerSuteHaisCount(game.getJikaze());
 	}
+
+    public int getHan(){
+        return game.getAgariInfo().m_han;
+    }
 }

@@ -37,6 +37,13 @@ public class Settings extends PreferenceActivity {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("endless", true);
     }
 
+    public static boolean isSecondFan(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("secondfan", true);
+    }
+
+    public static boolean isDebug(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("debug", true);
+    }
     public static String getStyle(Context context) {
         String[] style_entryvalues = context.getResources().getStringArray(R.array.style_entryvalues);
         String style = PreferenceManager.getDefaultSharedPreferences(context).getString("styles", style_entryvalues[0]);

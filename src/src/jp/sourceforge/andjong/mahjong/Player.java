@@ -204,7 +204,7 @@ class Player {
 		m_ippatsu = false;
 		m_doubleReach = false;
 	}
-
+    //一発
 	public void setIppatsu(boolean a_ippatsu) {
 		this.m_ippatsu = a_ippatsu;
 	}

@@ -199,7 +199,7 @@ public class AndjongView extends View implements EventIf {
 	private static final int RESULT_DORAS_LEFT = 2;
 
 	/** Drawing items */
-	private DrawItem m_drawItem = new DrawItem();
+	private DrawItem m_drawItem = null; //new DrawItem(isDebug());
 
 	/** InfoUI */
 	private InfoUi m_infoUi;
@@ -279,6 +279,18 @@ public class AndjongView extends View implements EventIf {
         return Settings.isEndless(this.m_game);
     }
 
+    public boolean isDebug() {
+        boolean debug = Settings.isDebug(this.m_game);
+        //System.out.println(" by gary is debug: " +debug );
+        return debug;
+    }
+
+    public boolean isSecondFan() {
+        boolean isSecondFanSet = Settings.isSecondFan(this.m_game);
+        System.out.println("by gary is second fan: " + isSecondFanSet);
+        return isSecondFanSet;
+    }
+   // private String style="hongkong";
     public String getStyle() {
         return Settings.getStyle(this.m_game);
     }
@@ -295,6 +307,9 @@ public class AndjongView extends View implements EventIf {
 		//I want to save the activity.
 		this.m_game = (Game) context;
 
+        this.m_drawItem = new DrawItem(isDebug());
+
+        if (!isDebug()) PROGRESS_WAIT_TIME = 200;
 		// I initialize the image
 		initImage(getResources());
 
@@ -570,15 +585,15 @@ public class AndjongView extends View implements EventIf {
 				drawString(240, 160, a_canvas, 30, Color.WHITE, m_drawItem.getKyokuString(), Align.CENTER);
 				return;
 			} else if (m_drawItem.m_state == STATE_RESULT) {
-				// Dora I to display.
-				drawDoraHais(RESULT_DORAS_LEFT, RESULT_DORAS_TOP, a_canvas, m_infoUi.getDoraHais());
+				// Dora I to display. by gary only display when in Japan style
+				if (getStyle().equalsIgnoreCase("japan")) drawDoraHais(RESULT_DORAS_LEFT, RESULT_DORAS_TOP, a_canvas, m_infoUi.getDoraHais());
 
 				SuteHai[] suteHais = m_drawItem.m_playerInfos[m_drawItem.m_kazeFrom].m_kawa.getSuteHais();
 				int kawaLength = m_drawItem.m_playerInfos[m_drawItem.m_kazeFrom].m_kawa.getSuteHaisLength();
 				for (int i = 0; i < kawaLength; i++) {
 					if (suteHais[i].isReach()) {
 						// I want to display the back Dora.
-						drawDoraHais(RESULT_DORAS_LEFT, RESULT_DORAS_TOP + HAI_HEIGHT, a_canvas, m_infoUi.getUraDoraHais());
+                        if (getStyle().equalsIgnoreCase("japan")) drawDoraHais(RESULT_DORAS_LEFT, RESULT_DORAS_TOP + HAI_HEIGHT, a_canvas, m_infoUi.getUraDoraHais());
 						break;
 					}
 				}
@@ -658,8 +673,8 @@ public class AndjongView extends View implements EventIf {
 			// I want to display the home.
 			drawHonba(a_canvas, m_drawItem.getHonba());
 
-			// Dora I to display.
-			drawDoraHais(DORAS_LEFT, DORAS_TOP, a_canvas, m_infoUi.getDoraHais());
+			// Dora I to display. by gary only display when in Japan style
+           if (getStyle().equalsIgnoreCase("japan")) drawDoraHais(DORAS_LEFT, DORAS_TOP, a_canvas, m_infoUi.getDoraHais());
 
 			int manKaze = m_infoUi.getManKaze();
 			int dispKaze[] = { 0, 1, 2, 3 };
@@ -806,8 +821,13 @@ public class AndjongView extends View implements EventIf {
 		for (; i < a_hais.length; i++) {
 			a_canvas.drawBitmap(getHaiImage(a_hais[i]), a_left + (i * HAI_WIDTH), a_top, null);
 		}
-
-		for (; i < Yama.DORA_HAIS_MAX; i++) {
+        int dora_hais_max;
+        if (getStyle().equalsIgnoreCase("hongkong")) {
+            dora_hais_max = 1;
+        } else {
+            dora_hais_max = 5;
+        }
+		for (; i < dora_hais_max; i++) {
 			a_canvas.drawBitmap(mHaiUraImage, a_left + (i * HAI_WIDTH), a_top, null);
 		}
 	}
@@ -1690,6 +1710,7 @@ public class AndjongView extends View implements EventIf {
     /** Of progress latency */
 	//private static int PROGRESS_WAIT_TIME = 100;
 	private static int PROGRESS_WAIT_TIME = 30;
+    //private static int PROGRESS_WAIT_TIME = 200; //Gary for production waiting time
 
 	/**
 	 *  I will handle the event.

@@ -4,7 +4,11 @@
 		android:title="@string/settings_kyokusuu" android:dialogTitle="@string/settings_kyokusuu"
 		android:entries="@array/list_entries" android:entryValues="@array/list_entryvalues" />
 
-	<CheckBoxPreference android:key="settings_kuitan"
+    <ListPreference android:key="styles"
+        android:title="@string/styles" android:dialogTitle="@string/styles"
+        android:entries="@array/style_entries" android:entryValues="@array/style_entryvalues" />
+
+    <CheckBoxPreference android:key="settings_kuitan"
 		android:title="@string/settings_kuitan" android:defaultValue="true" />
 
 	<CheckBoxPreference android:key="hints"
@@ -13,8 +17,10 @@
     <CheckBoxPreference android:key="endless"
         android:title="@string/endless" android:defaultValue="true" />
 
-    <ListPreference android:key="styles"
-        android:title="@string/styles" android:dialogTitle="@string/styles"
-        android:entries="@array/style_entries" android:entryValues="@array/style_entryvalues" />
+    <CheckBoxPreference android:key="secondfan"
+        android:title="@string/secondfan" android:defaultValue="true" />
+
+    <CheckBoxPreference android:key="debug"
+        android:title="@string/debug" android:defaultValue="true" />
 
 </PreferenceScreen>
