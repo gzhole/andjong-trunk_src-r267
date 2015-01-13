@@ -223,6 +223,8 @@ public class Mahjong implements Runnable {
 
 	private PlayerAction m_playerAction = new PlayerAction();
 
+    private PlayerAction m_playerActionAi = new PlayerAction();
+
 	public int getManKaze() {
 		return m_players[0].getJikaze();
 	}
@@ -327,7 +329,7 @@ public class Mahjong implements Runnable {
         } else{
         	m_players[0] = new Player((EventIf) new Man(m_info, "A", m_playerAction));
         }
-		m_players[1] = new Player((EventIf) new AIPon(m_info, "B"));
+		m_players[1] = new Player((EventIf) new AiMan(m_info, "B", m_playerAction));// new Player((EventIf) new AIPon(m_info, "B"));
 		m_players[2] = new Player((EventIf) new AI(m_info, "C"));
 		m_players[3] = new Player((EventIf) new AI(m_info, "D"));
 
