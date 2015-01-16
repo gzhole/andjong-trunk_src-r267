@@ -47,7 +47,7 @@ public class Settings extends PreferenceActivity {
     public static String getStyle(Context context) {
         String[] style_entryvalues = context.getResources().getStringArray(R.array.style_entryvalues);
         String style = PreferenceManager.getDefaultSharedPreferences(context).getString("styles", style_entryvalues[0]);
-        System.out.println("by Gary: " + style);
+       // System.out.println("by Gary: " + style);
         return style;
     }
 }

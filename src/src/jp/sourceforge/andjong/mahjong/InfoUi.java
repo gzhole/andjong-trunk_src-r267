@@ -54,4 +54,12 @@ public class InfoUi extends Info {
 	public boolean[] getTenpai() {
 		return game.getTenpai();
 	}
+
+    public String getCurrentPlayerName() {
+        if (game!=null && game.getActivePlayer()!=null) {
+            return game.getActivePlayer().getEventIf().getName();
+        }
+        return null;
+
+    }
 }

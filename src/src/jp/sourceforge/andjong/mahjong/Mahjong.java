@@ -218,7 +218,11 @@ public class Mahjong implements Runnable {
 	/**  割れ目 */
 	//private int mWareme;
 
-	/** Active player */
+    public Player getActivePlayer() {
+        return activePlayer;
+    }
+
+    /** Active player */
 	private Player activePlayer;
 
 	private PlayerAction m_playerAction = new PlayerAction();
@@ -325,13 +329,13 @@ public class Mahjong implements Runnable {
         // initialize an array of players
         m_players = new Player[m_playerNum];
         if (m_view.isDebug()) {
-            m_players[0] = new Player((EventIf) new AIPon(m_info, "A"));
+            m_players[0] = new Player((EventIf) new AIPon(m_info, "S"));
         } else{
-        	m_players[0] = new Player((EventIf) new Man(m_info, "A", m_playerAction));
+        	m_players[0] = new Player((EventIf) new Man(m_info, "S", m_playerAction));
         }
-		m_players[1] = new Player((EventIf) new AiMan(m_info, "B", m_playerAction));// new Player((EventIf) new AIPon(m_info, "B"));
-		m_players[2] = new Player((EventIf) new AI(m_info, "C"));
-		m_players[3] = new Player((EventIf) new AI(m_info, "D"));
+		m_players[1] = new Player((EventIf) new AiMan(m_info, "E", m_playerAction));// new Player((EventIf) new AIPon(m_info, "B"));
+		m_players[2] = new Player((EventIf) new AI(m_info, "N"));
+		m_players[3] = new Player((EventIf) new AI(m_info, "W"));
 
 		for (int i = 0; i < m_playerNum; i++) {
 			m_players[i].setTenbou(TENBOU_INIT);

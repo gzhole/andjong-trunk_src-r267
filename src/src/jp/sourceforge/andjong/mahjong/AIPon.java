@@ -141,7 +141,7 @@ public class AIPon implements EventIf {
             int agariScore = m_info.getAgariScore(m_tehai, m_suteHai);
             int han = m_info.getHan();
             if ((m_info.isSecondFan() && agariScore > 0&& han > 1) ||(!m_info.isSecondFan() && agariScore > 0)) {
-                System.out.println("by Gary before trying to RON, han is: " + han );
+                //System.out.println("by Gary before trying to RON, han is: " + han );
                 return EventId.RON_AGARI;
             }
         }
@@ -219,11 +219,11 @@ public class AIPon implements EventIf {
             m_tehai.rmJyunTehai(i);
             countFormat.setCountFormat(m_tehai, addHai);
             score = getCountFormatScore(countFormat);
-            System.out.println("score:" + score + ",maxScore:" + maxScore +
-                    ",hai: " + hai.getId());
+       //     System.out.println("score:" + score + ",maxScore:" + maxScore +
+       //             ",hai: " + hai.getId());
             if (score > maxScore) {
                 maxScore = score;
-                System.out.println("setSutehaiIdx:" + i);
+                //System.out.println("setSutehaiIdx:" + i);
                 m_iSutehai = i;
             }
             m_tehai.addJyunTehai(hai);

@@ -21,6 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Paint.Align;
@@ -287,7 +288,7 @@ public class AndjongView extends View implements EventIf {
 
     public boolean isSecondFan() {
         boolean isSecondFanSet = Settings.isSecondFan(this.m_game);
-        System.out.println("by gary is second fan: " + isSecondFanSet);
+       // System.out.println("by gary is second fan: " + isSecondFanSet);
         return isSecondFanSet;
     }
    // private String style="hongkong";
@@ -530,6 +531,7 @@ public class AndjongView extends View implements EventIf {
 		m_printPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		m_printPaint.setColor(Color.WHITE);
 		m_printPaint.setAlpha(192);
+        //m_printPaint.setAlpha(10);
 		m_printRect = new RectF(PRINT_AREA_LEFT, PRINT_AREA_TOP, PRINT_AREA_RIGHT, PRINT_AREA_BOTTOM);
 	}
 
@@ -635,11 +637,27 @@ public class AndjongView extends View implements EventIf {
 
 			a_canvas.drawRoundRect(m_infoRect, INFO_ROUND, INFO_ROUND, m_infoPaint);
 
+
 			switch (m_drawItem.m_state) {
 			case STATE_INIT_WAIT:
 			case STATE_NONE:
 				// Nothing is drawn.
 				return;
+            case STATE_SUTEHAI:
+                    // I want to display the reach of the message.
+
+                System.out.println("by gary STATE_SUTEHAI: " +m_drawItem.m_kazeTo);
+             //   if (m_playerAction.isActionRequest()){
+             /*   Hai hai = m_infoUi.getSuteHai();
+
+                System.out.println("by gary hai: " + hai.getId());
+
+                drawHai((PRINT_AREA_LEFT + PRINT_AREA_RIGHT) / 2, (PRINT_AREA_TOP + PRINT_AREA_BOTTOM) / 2, a_canvas,hai);*/
+               //     drawIssuedFrom((PRINT_AREA_LEFT + PRINT_AREA_RIGHT) / 2, (PRINT_AREA_TOP + PRINT_AREA_BOTTOM) / 2, a_canvas, m_infoUi.getCurrentPlayerName());
+              //  }
+                //drawIssuedFrom((PRINT_AREA_LEFT + PRINT_AREA_RIGHT) / 2, (PRINT_AREA_TOP + PRINT_AREA_BOTTOM) / 2, a_canvas, m_drawItem);
+                    m_drawItem.setState(STATE_PLAY);
+                    break;
 			case STATE_REACH:
 				// I want to display the reach of the message.
 				drawPrint(a_canvas, res.getString(R.string.info_reach));
@@ -661,6 +679,17 @@ public class AndjongView extends View implements EventIf {
 				break;
 			}
 
+            if (getStyle().equalsIgnoreCase("hongkong")&& m_drawItem.m_tsumoRemain <83 && m_drawItem.m_state!= STATE_REACH &&m_drawItem.m_state!= STATE_RON&&m_drawItem.m_state!= STATE_TSUMO&&m_drawItem.m_state!= STATE_RYUUKYOKU&&m_drawItem.m_state!= STATE_END) {
+
+                Hai hai = m_infoUi.getSuteHai();
+
+               // System.out.println("by gary hai: " + hai.getId());
+
+                drawHai((PRINT_AREA_LEFT + PRINT_AREA_RIGHT) / 2, (PRINT_AREA_TOP + PRINT_AREA_BOTTOM) / 2, a_canvas,hai);
+             //   if (!(m_drawItem.m_eventId == EventId.UI_WAIT_PROGRESS))
+              //      drawIssuedFrom((PRINT_AREA_LEFT + PRINT_AREA_RIGHT) / 2, (PRINT_AREA_TOP + PRINT_AREA_BOTTOM) / 2, a_canvas, m_infoUi.getCurrentPlayerName());
+
+            }
 			// Stations I to display.
 			drawString(KYOKU_LEFT - 30, KYOKU_TOP, a_canvas, KYOKU_TEXT_SIZE, Color.WHITE, m_drawItem.getKyokuString(), Align.CENTER);
 
@@ -749,6 +778,12 @@ public class AndjongView extends View implements EventIf {
 						iMenu++;
 					}
 				}
+
+              /*  Hai hai = m_infoUi.getSuteHai();
+
+                System.out.println("by gary hai: " + hai.getId());
+
+                drawHai((PRINT_AREA_LEFT + PRINT_AREA_RIGHT) / 2, (PRINT_AREA_TOP + PRINT_AREA_BOTTOM) / 2, a_canvas,hai);*/
 			}
 		}
 	}
@@ -804,6 +839,52 @@ public class AndjongView extends View implements EventIf {
 		canvas.drawText(string, left, top - ((paint.ascent() + paint.descent()) / 2), paint);
 	}
 
+    public Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+        return resizedBitmap;
+    }
+    private void drawHai(int a_left, int a_top, Canvas a_canvas, Hai hai) {
+      //  int i = 0;
+     //   for (; i < a_hais.length; i++) {
+            a_canvas.drawBitmap(getResizedBitmap(getLargeHaiImage(hai), 88, 68), a_left-35 , a_top-35, null);
+     //   }
+     //   int dora_hais_max;
+      /*  if (getStyle().equalsIgnoreCase("hongkong")) {
+            dora_hais_max = 1;
+        } else {
+            dora_hais_max = 5;
+        }
+        for (; i < dora_hais_max; i++) {
+            a_canvas.drawBitmap(mHaiUraImage, a_left + (i * HAI_WIDTH), a_top, null);
+        }*/
+    }
+
+    private void drawIssuedFrom(int a_left, int a_top, Canvas a_canvas, String str) {
+        //  int i = 0;
+        //   for (; i < a_hais.length; i++) {
+        drawString(a_left - 2, a_top - 50, a_canvas, MESSAGE_TEXT_SIZE, Color.WHITE, str, Align.CENTER);
+       // (getResizedBitmap(getLargeHaiImage(hai),88,68), ,, null);
+        //   }
+        //   int dora_hais_max;
+      /*  if (getStyle().equalsIgnoreCase("hongkong")) {
+            dora_hais_max = 1;
+        } else {
+            dora_hais_max = 5;
+        }
+        for (; i < dora_hais_max; i++) {
+            a_canvas.drawBitmap(mHaiUraImage, a_left + (i * HAI_WIDTH), a_top, null);
+        }*/
+    }
 	/**
 	 * Dora I to display.
 	 *
@@ -1864,6 +1945,7 @@ public class AndjongView extends View implements EventIf {
 			m_playerAction.actionWait();
 			break;
 		case SUTEHAI:// discarded tile
+            m_drawItem.m_state = STATE_SUTEHAI;
 			//  I want to copy the tile hand.
 			m_infoUi.copyTehai(m_drawItem.m_playerInfos[a_kazeFrom].m_tehai, a_kazeFrom);
 

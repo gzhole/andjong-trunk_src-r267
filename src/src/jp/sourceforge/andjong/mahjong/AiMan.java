@@ -425,11 +425,11 @@ public class AiMan implements EventIf {
             m_tehai.rmJyunTehai(i);
             countFormat.setCountFormat(m_tehai, addHai);
             score = getCountFormatScore(countFormat);
-            System.out.println("score:" + score + ",maxScore:" + maxScore +
-                    ",hai: " + hai.getId());
+       //     System.out.println("score:" + score + ",maxScore:" + maxScore +
+        //            ",hai: " + hai.getId());
             if (score > maxScore) {
                 maxScore = score;
-                System.out.println("setSutehaiIdx:" + i);
+                //System.out.println("setSutehaiIdx:" + i);
                 _m_iSutehai = i;
             }
             m_tehai.addJyunTehai(hai);

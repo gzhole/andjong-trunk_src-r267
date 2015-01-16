@@ -45,6 +45,9 @@ public class DrawItem {
 	/** end */
 	public static final int STATE_END = 10;
 
+    //discard tile
+    public static final int STATE_SUTEHAI = 11;
+
 	/** state*/
 	int m_state = STATE_INIT_WAIT;
 
