@@ -688,8 +688,13 @@ public class AndjongView extends View implements EventIf {
                 drawHai((PRINT_AREA_LEFT + PRINT_AREA_RIGHT) / 2, (PRINT_AREA_TOP + PRINT_AREA_BOTTOM) / 2, a_canvas,hai);
              //   if (!(m_drawItem.m_eventId == EventId.UI_WAIT_PROGRESS))
               //      drawIssuedFrom((PRINT_AREA_LEFT + PRINT_AREA_RIGHT) / 2, (PRINT_AREA_TOP + PRINT_AREA_BOTTOM) / 2, a_canvas, m_infoUi.getCurrentPlayerName());
+                if (m_infoUi.getLastIssuedPlayer()!=null) {
+                    drawIssuedFrom((PRINT_AREA_LEFT + PRINT_AREA_RIGHT) / 2, (PRINT_AREA_TOP + PRINT_AREA_BOTTOM) / 2, a_canvas,m_infoUi.getLastIssuedPlayer());
+                }
 
             }
+
+
 			// Stations I to display.
 			drawString(KYOKU_LEFT - 30, KYOKU_TOP, a_canvas, KYOKU_TEXT_SIZE, Color.WHITE, m_drawItem.getKyokuString(), Align.CENTER);
 

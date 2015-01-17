@@ -839,6 +839,7 @@ public class Mahjong implements Runnable {
 
 			// take between the physical pie
 			m_infoUi.setSutehaiIdx(sutehaiIdx);
+            m_infoUi.setLastIssuedPlayer(activePlayer.getEventIf().getName());
 			m_view.event(EventId.UI_WAIT_RIHAI, m_kazeFrom, m_kazeFrom);
 
 			if (sutehaiIdx >= activePlayer.getTehai().getJyunTehaiLength()) {// Tsumo cut

@@ -62,4 +62,14 @@ public class InfoUi extends Info {
         return null;
 
     }
+
+    public String getLastIssuedPlayer() {
+        return lastIssuedPlayer;
+    }
+
+    public void setLastIssuedPlayer(String lastIssuedPlayer) {
+        this.lastIssuedPlayer = lastIssuedPlayer;
+    }
+
+    private String lastIssuedPlayer;
 }

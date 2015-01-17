@@ -312,4 +312,7 @@ public class Info {
     public int getHan(){
         return game.getAgariInfo().m_han;
     }
+
+
+
 }
